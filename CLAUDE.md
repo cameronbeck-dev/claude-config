@@ -63,6 +63,13 @@ Then ask: "Ready to commit and push?"
 
 If yes, commit all changes with an appropriate message and push to the current branch's remote. Then run the After Commit and Push steps from `skills/session-memory/skill.md`.
 
+## README Policy
+
+- Before starting any code-changing task, check whether `README.md` exists at the project root
+- If it doesn't exist, create one as part of the task — include it in the implementation plan
+- After any code changes are complete, review `README.md` and update it if the changes affect anything it documents (features, setup, usage, architecture)
+- README updates are part of the implementation — include them in the same commit
+
 ## Response Style
 
 Default to brief summaries. Do not explain what code does unless asked — well-named code explains itself. The user can ask for more detail if needed.
