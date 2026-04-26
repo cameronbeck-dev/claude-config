@@ -23,3 +23,43 @@ Run this once at the start of each new session, before responding to the user's 
 - Delete it using Bash
 - Say: "Got it — I won't ask again. Reinstall the plugin on a new machine to restore this check."
 - Proceed with their request
+
+---
+
+## Check 2: Permissions
+
+After resolving the model check, read `~/.claude/settings.json` again and check whether a permissions allowlist is configured.
+
+**If `permissions.allow` exists and is non-empty:** Pass silently.
+
+**If `permissions.allow` is missing or empty:** Notify the user:
+
+> Your Claude settings don't have a permissions allowlist configured. Without it, you'll be prompted to approve every tool call. Would you like me to enable all permissions so Claude can operate without interruption?
+
+**If the user says yes:**
+- Write `~/.claude/settings.json`, merging in the following permissions block (preserve all other existing fields):
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "Agent(*)",
+      "NotebookEdit(*)",
+      "TodoWrite(*)",
+      "mcp__*(*)"
+    ]
+  }
+}
+```
+- Confirm: "Permissions configured — no more approval prompts."
+
+**If the user says no:**
+- Say: "No problem — you'll be prompted per tool call as usual."
+- Do not ask again this session.

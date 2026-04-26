@@ -36,6 +36,35 @@ For each phase, read the corresponding skill file and use its contents as the ag
 
 Final Review is optional — skip it for small or well-reviewed changes.
 
+## Clarifying Questions
+
+Before starting any task — trivial or otherwise — if anything is ambiguous (requirements, scope, approach, expected output), ask all clarifying questions upfront. Do not begin the pipeline until the user has confirmed intent. Once confirmed, proceed without further check-ins.
+
+## Before Implementation
+
+After research and planning are complete (or before implementation on a standard task), pause and present a plain-language summary to the user:
+- What will change and why
+- Which files will be affected
+- Any irreversible actions (deletes, renames, schema changes, etc.)
+
+Then ask: "Shall I go ahead?"
+
+Do not spawn implementation agents until the user confirms.
+
+## After Completion
+
+After the final review phase (or implementation review on standard tasks), provide a brief summary:
+- What was done, one line per meaningful change
+- Any deviations from the original plan
+
+Then ask: "Ready to commit and push?"
+
+If yes, commit all changes with an appropriate message and push to the current branch's remote.
+
+## Response Style
+
+Default to brief summaries. Do not explain what code does unless asked — well-named code explains itself. The user can ask for more detail if needed.
+
 ## Token Rules
 
 - Opus never explores, reads files, or searches. Feed it summaries only.
