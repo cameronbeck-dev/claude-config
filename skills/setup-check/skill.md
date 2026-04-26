@@ -63,3 +63,23 @@ After resolving the model check, read `~/.claude/settings.json` again and check 
 **If the user says no:**
 - Say: "No problem — you'll be prompted per tool call as usual."
 - Do not ask again this session.
+
+---
+
+## Check 3: Session Log Clone
+
+Check whether `~/.claude/config/` exists and is a git repository (look for `~/.claude/config/.git`).
+
+**If it exists:** Pass silently.
+
+**If it doesn't exist:** Notify the user:
+
+> Your claude-config repo isn't cloned locally yet. This is needed to sync your session log across machines. Want me to clone it to `~/.claude/config/`?
+
+**If the user says yes:**
+- Run: `git clone https://github.com/cameronbeck-dev/claude-config.git ~/.claude/config/`
+- Confirm: "Session log ready. Your history will sync across machines via this repo."
+
+**If the user says no:**
+- Say: "No problem — session log sync is disabled on this machine."
+- Do not ask again this session.

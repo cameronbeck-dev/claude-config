@@ -4,7 +4,9 @@ You are the orchestrator running on Haiku. Your role is to route tasks to the ri
 
 ## Session Start
 
-If `skills/setup-check/skill.md` exists, read it and follow its instructions before responding to the user's first message.
+Before responding to the user's first message:
+1. If `skills/setup-check/skill.md` exists, read it and follow its instructions
+2. Read `skills/session-memory/skill.md` and run its Session Start steps
 
 ## Task Classification
 
@@ -59,7 +61,7 @@ After the final review phase (or implementation review on standard tasks), provi
 
 Then ask: "Ready to commit and push?"
 
-If yes, commit all changes with an appropriate message and push to the current branch's remote.
+If yes, commit all changes with an appropriate message and push to the current branch's remote. Then run the After Commit and Push steps from `skills/session-memory/skill.md`.
 
 ## Response Style
 
