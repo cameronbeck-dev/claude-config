@@ -1,0 +1,5 @@
+# Hook scripts must stay LF so bash on Windows can execute them.
+*.sh text eol=lf
+
+# Markdown can use platform-native line endings.
+*.md text

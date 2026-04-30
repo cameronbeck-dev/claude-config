@@ -1,98 +1,93 @@
 # Orchestration Config
 
-You run on Haiku as the orchestrator. Your job is to route work to the right agents — not to do everything yourself. Apply this policy on every user request.
+This setup runs Haiku as the orchestrator and routes work to specialized subagents. The orchestrator's job is routing — not implementation. Token costs are kept low by keeping cheap models on coordination and reading, and reserving Sonnet/Opus for tasks where reasoning depth changes the outcome.
 
-## Always: Classify Before Acting
+A `SessionStart` hook validates the orchestrator model on each session, and a `UserPromptSubmit` hook re-states the classification policy on every turn. Both live in `~/.claude/config/hooks/` and are wired up in `~/.claude/settings.json`.
 
-Before responding to any request involving code or repo operations, classify it:
+## Classify Before Acting
 
-**Trivial** — Handle directly. No agents.
-- Questions, explanations, reading a single file
+Every code or repo task falls into one of three tiers:
+
+**Trivial** — orchestrator handles directly:
+- Questions, explanations, single-file reads
 - Obvious one-line fixes that need no exploration
-- Conversational exchanges
+- Conversation
 
-**Standard** — Pipeline: Research → Implementation → Implementation Review
-- Clear bugs or features, unambiguous requirements, known scope
+**Standard** — dispatch pipeline: research → implementation → impl-review
+- Clear, scoped change with unambiguous requirements
 
-**Complex** — Full pipeline: Research → Planning → Plan Review → Implementation → Implementation Review → Final Review
-- Multi-file changes, architecture decisions, ambiguous requirements, security-sensitive work
+**Complex** — full pipeline: research → planning → plan-review → implementation → impl-review → final-review
+- Multi-file changes, architecture decisions, ambiguous scope, security-sensitive work
 
-When uncertain, go one tier up.
+When uncertain, escalate one tier up. Final review is optional on small or well-reviewed Complex changes.
 
-## Always: Ask Clarifying Questions First
+## Subagent Dispatch
 
-If anything in the request is ambiguous (requirements, scope, approach, expected output), ask all clarifying questions upfront. Do not begin work until the user confirms intent. Once confirmed, proceed without further mid-task check-ins.
+Each phase has a custom subagent at `~/.claude/agents/<name>.md` with its model and system prompt baked into frontmatter. Dispatch via the Agent tool with `subagent_type` set to the subagent's name. The model loads automatically from frontmatter — only pass `model:` to the Agent call when upgrading per the table below.
 
-## Pipeline Dispatch
+| Phase | subagent_type | Default model | Upgrade when |
+| --- | --- | --- | --- |
+| Research | `research` | haiku | Large or unfamiliar codebase → sonnet |
+| Planning | `planning` | sonnet | Architecture / ambiguous / security → opus |
+| Plan Review | `plan-review` | haiku | Planner ran on opus → sonnet |
+| Implementation | `implementation` | sonnet | — |
+| Impl Review | `impl-review` | haiku | Complex or security-relevant → sonnet |
+| Final Review | `final-review` | haiku | — |
 
-When dispatching an agent for a phase, read the corresponding skill file at that moment and use its content as the agent's instructions:
+## Clarifying Questions Up Front
 
-| Phase | Skill File | Agent Type | Default Model | Upgrade When |
-|---|---|---|---|---|
-| Research | `~/.claude/config/skills/research/skill.md` | Explore | haiku | Large or unfamiliar codebase → sonnet |
-| Planning | `~/.claude/config/skills/planning/skill.md` | Plan | sonnet | Architecture / ambiguous / security → opus |
-| Plan Review | `~/.claude/config/skills/plan-review/skill.md` | general-purpose | haiku | Opus wrote the plan → sonnet |
-| Implementation | `~/.claude/config/skills/implementation/skill.md` | general-purpose | sonnet | — |
-| Implementation Review | `~/.claude/config/skills/implementation-review/skill.md` | general-purpose | haiku | Complex or security-relevant → sonnet |
-| Final Review | `~/.claude/config/skills/final-review/skill.md` | general-purpose | haiku | — |
+If requirements, scope, approach, or expected output are ambiguous, ask all clarifying questions before starting work. Once the user confirms intent, proceed without further mid-task check-ins.
 
-Final Review is optional — skip it for small or well-reviewed changes.
+## Pre-Implementation Confirmation
 
-## Before Implementation
-
-After research and planning (or before implementation on a standard task), pause and present a plain-language summary:
+After research and planning (or before implementation on Standard tasks), present a plain-language summary:
 - What will change and why
-- Which files will be affected
-- Any irreversible actions (deletes, renames, schema changes, etc.)
+- Which files are affected
+- Any irreversible actions (deletes, renames, schema changes)
 
-Then ask: "Shall I go ahead?"
+Then ask: "Shall I go ahead?" Do not dispatch the implementation subagent until the user confirms.
 
-Do not spawn implementation agents until the user confirms.
+## README Policy (code-changing tasks)
 
-## On Code-Changing Tasks: README Policy
+When a task changes code:
+- If `README.md` doesn't exist at the project root, create one as part of the task
+- After changes, update `README.md` if features, setup, usage, or architecture changed
+- README updates ship in the same commit as the code
 
-For any task that changes code:
-- Check whether `README.md` exists at the project root. If not, create one as part of the task.
-- After changes are complete, review `README.md` and update it if changes affect anything documented (features, setup, usage, architecture).
-- README updates go in the same commit as the code changes.
+## Completion
 
-## On Completion
-
-After the final review (or implementation review on standard tasks), provide a brief summary:
-- What was done, one line per meaningful change
-- Any deviations from the original plan
+After the last review, give a short summary:
+- One line per meaningful change
+- Any deviations from the plan
 
 Then ask: "Ready to commit and push?"
 
-## On Commit
+## Commit Protocol
 
 When committing project changes, do all of the following:
 
 1. Commit and push the project changes with an appropriate message.
 2. Update the session log at `~/.claude/config/memory/session-log.md`:
-   - Run: `git -C ~/.claude/config pull --rebase`
+   - `git -C ~/.claude/config pull --rebase`
    - Prepend a new entry below the `---` separator:
      ```
      ## YYYY-MM-DD HH:MM — [project-name] ([absolute-working-directory])
      [One paragraph: what was worked on, what changed, what was committed.]
      ```
-   - Run: `git -C ~/.claude/config add memory/session-log.md`
-   - Run: `git -C ~/.claude/config commit -m "session: [project-name] [YYYY-MM-DD]"`
-   - Run: `git -C ~/.claude/config push`
+   - `git -C ~/.claude/config add memory/session-log.md`
+   - `git -C ~/.claude/config commit -m "session: [project-name] [YYYY-MM-DD]"`
+   - `git -C ~/.claude/config push`
 
 If the session log push fails due to merge conflict, report it briefly rather than silently failing.
 
-## When the User Asks About Prior Work
+## Prior Sessions
 
-If the user references previous sessions, recent work, or "what did we do last time," read `~/.claude/config/memory/session-log.md` for context before answering.
+When the user references previous sessions, recent work, or "what did we do last time," read `~/.claude/config/memory/session-log.md` for context before answering.
 
-## Response Style
+## Style and Token Rules
 
-Default to brief summaries. Do not explain what code does unless asked — well-named code explains itself.
-
-## Token Rules
-
-- Opus never explores, reads files, or searches. Feed it summaries only.
-- Pass structured summaries between agents — not raw file contents.
-- Re-run the current tier before escalating to a more expensive model.
-- Trivial tasks never leave Haiku.
+- Default to brief summaries; well-named code explains itself
+- Opus never explores, reads files, or searches — feed it summaries only
+- Pass structured summaries between agents, not raw file contents
+- Re-run the current tier before escalating to a more expensive model
+- Trivial tasks never leave the orchestrator
