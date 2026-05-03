@@ -4,6 +4,11 @@ Entries are newest first. Each entry is written automatically after a commit and
 
 ---
 
+## 2026-05-03 21:00 — personal-llm (C:\Users\GGPC\Documents\Programming\personal-llm)
+Made two small UI fixes: doubled the Sage title font-size from 10px to 20px in globals.css, and replaced the static 'Thinking...' send button text with a live timer showing 'Thought for Xs' counting up while streaming (with an interval + cleanup on done/error). Rewrote README.md to reflect the current full architecture, all API routes, supported providers, database schema overview, and deployment instructions. Committed and pushed as 3d78801 to https://github.com/cameronbeck-dev/sage-llm.
+
+---
+
 ## 2026-04-30 20:15 — recipe-wizard (C:\Users\GGPC\Documents\programming\recipe-wizard)
 Reviewed and improved recipe generation prompt system in response to user reports that recipes weren't following requests. Dispatched Opus planning agent to design comprehensive improvements. Implemented: upgraded default model from gpt-5.4-nano to gpt-5.5 (released 2026-04-23); restructured system prompt with clear sections (ROLE, FORMAT, SCHEMA, FIELD RULES, EXAMPLES, PRIORITY ORDER, CONFLICT RESOLUTION); fixed N/A ambiguity for ingredient units; added _split_preferences() to separate hard constraints from soft preferences; rewrote preference context generation with explicit headers; added _check_preference_compliance() with conservative keyword matching for 6+ dietary types; integrated compliance checking into retry loop with targeted error messages; enhanced validation to catch empty arrays and missing fields; added 52 unit tests plus live contract test; fixed final-attempt handling for compliance failures. All 159 backend tests pass (4 skipped). User request/preference prioritization is now explicit in system prompt, making recipes more relevant. Committed as 984c212 and pushed.
 
