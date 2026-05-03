@@ -7,6 +7,9 @@ Entries are newest first. Each entry is written automatically after a commit and
 ## 2026-05-03 21:00 — personal-llm (C:\Users\GGPC\Documents\Programming\personal-llm)
 Made two small UI fixes: doubled the Sage title font-size from 10px to 20px in globals.css, and replaced the static 'Thinking...' send button text with a live timer showing 'Thought for Xs' counting up while streaming (with an interval + cleanup on done/error). Rewrote README.md to reflect the current full architecture, all API routes, supported providers, database schema overview, and deployment instructions. Committed and pushed as 3d78801 to https://github.com/cameronbeck-dev/sage-llm.
 
+## 2026-05-03 23:45 — personal-llm (C:\Users\GGPC\Documents\Programming\personal-llm)
+Implemented persistent memory system for Sage: consolidated agent_files + memory_files into memory_docs table (AGENTS.md, MEMORY.md, SUMMARIES.json per user), added welcome_templates with 10-question onboarding, whisper message role for inline memory update notifications, automatic memory review pass after each assistant message (fire-and-forget LLM call), session summary on conversation switch (capped at 20 entries with fact migration), /setup command for restarting onboarding, and Settings UI for editing AGENTS.md. Bugs fixed: this context in store methods, whisper not being created, whispers not showing until conversation switch. Committed and pushed as b9cd9a9.
+
 ---
 
 ## 2026-04-30 20:15 — recipe-wizard (C:\Users\GGPC\Documents\programming\recipe-wizard)
