@@ -4,7 +4,8 @@ Entries are newest first. Each entry is written automatically after a commit and
 
 ---
 
-## 2026-05-03 21:00 — personal-llm (C:\Users\GGPC\Documents\Programming\personal-llm)
+## 2026-05-03 23:58 — personal-llm (C:\Users\GGPC\Documents\Programming\personal-llm)
+Fixed blank-screen send bug: `createConversation` in the Zustand store uses `this.activeConversationId`, but was being called via `await createConversation()` from Chat.tsx — losing the `this` context. Fixed by calling `useConversationStore.getState().createConversation()` instead. Also fixed an earlier TypeScript error where `set()` was called outside the store creator. Committed and pushed as 89a4447.
 Made two small UI fixes: doubled the Sage title font-size from 10px to 20px in globals.css, and replaced the static 'Thinking...' send button text with a live timer showing 'Thought for Xs' counting up while streaming (with an interval + cleanup on done/error). Rewrote README.md to reflect the current full architecture, all API routes, supported providers, database schema overview, and deployment instructions. Committed and pushed as 3d78801 to https://github.com/cameronbeck-dev/sage-llm.
 
 ## 2026-05-03 23:45 — personal-llm (C:\Users\GGPC\Documents\Programming\personal-llm)
