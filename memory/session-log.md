@@ -4,6 +4,10 @@ Entries are newest first. Each entry is written automatically after a commit and
 
 ---
 
+## 2026-05-30 — personal-llm (C:\Users\GGPC\Documents\programming\personal-llm) — Sage avatar SVG pixel-art rewrite
+
+Trivial commit (single logical change, no pipeline). Commit fb9a1e6 on wiki-migration branch, 2 files +106/-66. Replaced the div-based Sage avatar face with a 24x24 SVG sprite rendered from per-state pixel-coordinate maps (wizard hat with sparkle, hat brim, eyebrows, eyes, nose, mustache, beard, robe shoulders, and state-specific mouth shape). Updated globals.css: bumped sprite from 64px to 96px, replaced flex-based eyes/mouth elements with `.sage-avatar-sprite__svg` using `currentColor` fill, rewrote blink/speak/error animations to use transform-origin scaling on the SVG groups instead of width/height tweens on DOM elements. Error state now tints the entire wizard red via `color: var(--danger)` cascade. Pushed to origin/wiki-migration.
+
 ## 2026-05-26 18:30 — personal-llm (C:\Users\GGPC\Documents\programming\personal-llm) — Fly.io deployment config (sidesteps Windows pgvector install)
 
 Standard pipeline (research → impl → impl-review). Commit 83ddc14 on wiki-migration branch, 7 files +206/-3. **Context**: user enabled SAGE_WIKI_ENABLED and tested locally; wiki path runs (`appliedOps: 1` in worker logs) but mem0Client.addFact spams 8x Postgres 42P01 errors per turn because pgvector isn't installed on local Windows Postgres — migrations 023/024 no-op'd cleanly per the Phase 3 tolerant DO/EXCEPTION wrap, so `memories` table doesn't exist. After discussing Heroku vs Fly vs Hetzner for long-term (user has roadmap including Excel editing, code execution, OCR — Heroku breaks on docker-compose / persistent storage / sandboxing; Fly.io is the right ceiling-vs-cognitive-load tradeoff for this app), user chose Fly path. Deployment config gets us pgvector for free (Fly Postgres has it preinstalled) and unblocks dogfooding without the Windows extension dance.
