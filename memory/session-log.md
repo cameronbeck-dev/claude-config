@@ -4,6 +4,10 @@ Entries are newest first. Each entry is written automatically after a commit and
 
 ---
 
+## 2026-05-31 — personal-llm (C:\Users\GGPC\Documents\programming\personal-llm) — Favicon pixel-art wizard
+
+Trivial commit. Commit cbda230 on wiki-migration branch, 1 file +24/-7. Redrew `packages/client/public/sage.svg` (referenced by index.html) as a 16x16 pixel-art wizard echoing the SageAvatar style: pointy hat with sparkle plus, brim, brows, single-pixel eyes, tapered beard. Same dark bg `#1f221d` + accent green `#6cf08a` as before. Pushed to origin/wiki-migration.
+
 ## 2026-05-30 — personal-llm (C:\Users\GGPC\Documents\programming\personal-llm) — Sage avatar SVG pixel-art rewrite
 
 Trivial commit (single logical change, no pipeline). Commit fb9a1e6 on wiki-migration branch, 2 files +106/-66. Replaced the div-based Sage avatar face with a 24x24 SVG sprite rendered from per-state pixel-coordinate maps (wizard hat with sparkle, hat brim, eyebrows, eyes, nose, mustache, beard, robe shoulders, and state-specific mouth shape). Updated globals.css: bumped sprite from 64px to 96px, replaced flex-based eyes/mouth elements with `.sage-avatar-sprite__svg` using `currentColor` fill, rewrote blink/speak/error animations to use transform-origin scaling on the SVG groups instead of width/height tweens on DOM elements. Error state now tints the entire wizard red via `color: var(--danger)` cascade. Pushed to origin/wiki-migration.
