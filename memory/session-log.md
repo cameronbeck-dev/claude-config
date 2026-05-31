@@ -4,6 +4,10 @@ Entries are newest first. Each entry is written automatically after a commit and
 
 ---
 
+## 2026-05-31 17:30 — personal-llm (C:\Users\GGPC\Documents\programming\personal-llm) — Wire mem0 facts into chat-time recall
+
+Trivial-tier change handled directly by the orchestrator. Commit 7365911 on `wiki-migration`, single file (+13 lines in `packages/server/src/services/chat.ts`). Audit revealed mem0 was write-only: `wiki-ingest-turn` writes facts on every turn but nothing read them at chat time — only `api/facts.routes.ts` and `whisper-actions.ts` (undo) called `searchFacts`. Added an FTS lookup alongside the existing `maintainer.queryForContext` block, formatted as `## Relevant facts about the user` bullet list pushed into `systemParts` after `wikiContext`. Gated on `isWikiEnabled()`, wrapped in try/warn so mem0 failures never block the response. No extra LLM call — pure Postgres `ts_rank` over the `memories` table. User had asked whether the wiki/memory pipeline was well-suited for a chat-heavy "learn me over time" use case with no file uploads; this closes the most concrete gap before deploy. User then asked for 10 improvement recommendations before shipping.
+
 ## 2026-05-31 — personal-llm (C:\Users\GGPC\Documents\programming\personal-llm) — Migrate R2→Postgres BYTEA, Fly→Heroku
 
 Complex pipeline (research → plan@opus → plan-review@sonnet → user sign-off → impl@sonnet → impl-review@sonnet → final-review). Commit 186130f on wiki-migration branch, 25 files +2205/-3985. Followed by a Standard follow-up commit (same 186130f — bundled together) fixing two orphan-blob paths surfaced during review.
